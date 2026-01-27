@@ -1,7 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useWallets } from '@privy-io/react-auth';
+import { createPublicClient, createWalletClient, custom, http, formatUnits, parseUnits } from 'viem';
+import { base } from 'viem/chains';
+import { USDC_ADDRESS, ERC20_ABI } from '@/utils/usdcContract';
+
 import { useAppSelector, useAppDispatch } from '@/hooks/useRedux';
+import { setDepositStatus, addVirtualBalance, resetDeposit } from '@/store/walletSlice';
 import { toggleAutoRebalancing, simulateAPRFluctuation, autoRebalance, addEarnings } from '@/store/strategySlice';
 import { AreaChart, Area, LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
 
@@ -16,6 +22,7 @@ const PROTOCOLS = [
 const MOCK_DEPOSITED = 100; // 总存款 100 USDC
 const MOCK_EARNINGS = 0.1;  // 收益 0.1 USDC
 const MOCK_TOTAL_BALANCE = MOCK_DEPOSITED + MOCK_EARNINGS; // 总余额 100.1 USDC
+const MOCK_AGENT_WALLET = '0xDA20fE7B606E04d8b4b978012094C4f672d82C2B';
 
 // Mock 执行历史数据 (5 条) - 扩展结构
 const MOCK_EXECUTION_HISTORY = [
@@ -113,10 +120,116 @@ const MOCK_EXECUTION_HISTORY = [
 
 export default function DashboardPage() {
   const dispatch = useAppDispatch();
-  const { agentWallet } = useAppSelector((state) => state.wallet);
+  const { agentWallet, eoaWallet } = useAppSelector((state) => state.wallet);
   const { protocols, isAutoRebalancing, totalEarnings, rebalanceHistory } = useAppSelector((state) => state.strategy);
   const [activeTab, setActiveTab] = useState('Position Value');
+
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({ 'default-1': true });
+  const [showAddFundsModal, setShowAddFundsModal] = useState(false);
+  const [addFundsAmount, setAddFundsAmount] = useState('');
+  const [eoaBalance, setEoaBalance] = useState('0.00');
+  const [isDepositing, setIsDepositing] = useState(false);
+  const { wallets } = useWallets();
+
+  // Fetch EOA Balance
+  useEffect(() => {
+    const fetchBalance = async () => {
+      if (!eoaWallet.isConnected || !eoaWallet.address || !showAddFundsModal) return;
+
+      try {
+        const publicClient = createPublicClient({
+          chain: base,
+          transport: http()
+        });
+
+        const balance = await publicClient.readContract({
+          address: USDC_ADDRESS,
+          abi: ERC20_ABI,
+          functionName: 'balanceOf',
+          args: [eoaWallet.address as `0x${string}`],
+        });
+
+        setEoaBalance(formatUnits(balance, 6));
+      } catch (error) {
+        console.error('Failed to fetch balance:', error);
+        setEoaBalance('0.00');
+      }
+    };
+
+    fetchBalance();
+  }, [eoaWallet.address, eoaWallet.isConnected, showAddFundsModal]);
+
+  const handleDeposit = async () => {
+    if (!addFundsAmount || parseFloat(addFundsAmount) <= 0) return;
+    
+    // 查找外部钱包 (非 embedded wallet)
+    const externalWallet = wallets.find((wallet) => wallet.walletClientType !== 'privy');
+    if (!externalWallet) {
+      alert('Please connect an external wallet first');
+      return;
+    }
+
+    setIsDepositing(true);
+    dispatch(setDepositStatus({ status: 'pending', amount: parseFloat(addFundsAmount) }));
+
+    try {
+      const provider = await externalWallet.getEthereumProvider();
+      
+      const walletClient = createWalletClient({
+        chain: base,
+        transport: custom(provider),
+      });
+
+      const publicClient = createPublicClient({
+        chain: base,
+        transport: http(),
+      });
+
+      const [address] = await walletClient.getAddresses();
+      if (!address) throw new Error('No wallet address found');
+
+      // 使用 6 decimals (USDC 标准)
+      const usdcAmount = parseUnits(addFundsAmount, 6);
+
+      const hash = await walletClient.writeContract({
+        address: USDC_ADDRESS,
+        abi: ERC20_ABI,
+        functionName: 'transfer',
+        args: [MOCK_AGENT_WALLET as `0x${string}`, usdcAmount],
+        account: address,
+      });
+
+      dispatch(setDepositStatus({ status: 'confirming', txHash: hash }));
+
+      const receipt = await publicClient.waitForTransactionReceipt({ hash });
+
+      if (receipt.status === 'success') {
+        dispatch(addVirtualBalance(parseFloat(addFundsAmount)));
+        dispatch(setDepositStatus({ status: 'success' }));
+        setShowAddFundsModal(false);
+        setAddFundsAmount('');
+        alert('Deposit successful!');
+      } else {
+        throw new Error('Transaction failed');
+      }
+    } catch (error) {
+      console.error('Deposit error:', error);
+      const isUserRejection = 
+        error instanceof Error && 
+        (error.message.includes('User rejected') || 
+         error.message.includes('User denied') ||
+         error.message.includes('user rejected'));
+      
+      if (isUserRejection) {
+        dispatch(resetDeposit());
+      } else {
+        dispatch(setDepositStatus({ status: 'failed' }));
+        alert('Deposit failed. Please try again.');
+      }
+    } finally {
+      setIsDepositing(false);
+    }
+  };
 
   const toggleItem = (id: string) => {
     setExpandedItems(prev => ({ ...prev, [id]: !prev[id] }));
@@ -164,20 +277,20 @@ export default function DashboardPage() {
     { name: 'Jan 30', value: MOCK_TOTAL_BALANCE },
   ];
 
-  // Yield Projection 图表数据 - 展示 APR 预测曲线
+  // Yield Projection 图表数据 - 展示 APR 预测曲线（基准 100 USDC）
   const yieldProjectionData = [
-    { name: 'Jan', totalProjection: 10.1, agentProjection: 10.0 },
-    { name: 'Feb', totalProjection: 10.25, agentProjection: 10.05 },
-    { name: 'Mar', totalProjection: 10.4, agentProjection: 10.12 },
-    { name: 'Apr', totalProjection: 10.6, agentProjection: 10.18 },
-    { name: 'May', totalProjection: 10.8, agentProjection: 10.25 },
-    { name: 'Jun', totalProjection: 11.0, agentProjection: 10.32 },
-    { name: 'Jul', totalProjection: 11.15, agentProjection: 10.38 },
-    { name: 'Aug', totalProjection: 11.3, agentProjection: 10.45 },
-    { name: 'Sep', totalProjection: 11.45, agentProjection: 10.52 },
-    { name: 'Oct', totalProjection: 11.5, agentProjection: 10.55 },
-    { name: 'Nov', totalProjection: 11.65, agentProjection: 10.6 },
-    { name: 'Dec', totalProjection: 11.8, agentProjection: 10.65 },
+    { name: 'Jan', totalProjection: 100.10, agentProjection: 100.00 },
+    { name: 'Feb', totalProjection: 100.95, agentProjection: 100.35 },
+    { name: 'Mar', totalProjection: 101.80, agentProjection: 100.70 },
+    { name: 'Apr', totalProjection: 102.70, agentProjection: 101.05 },
+    { name: 'May', totalProjection: 103.60, agentProjection: 101.40 },
+    { name: 'Jun', totalProjection: 104.55, agentProjection: 101.80 },
+    { name: 'Jul', totalProjection: 105.50, agentProjection: 102.15 },
+    { name: 'Aug', totalProjection: 106.50, agentProjection: 102.55 },
+    { name: 'Sep', totalProjection: 107.50, agentProjection: 102.95 },
+    { name: 'Oct', totalProjection: 108.55, agentProjection: 103.35 },
+    { name: 'Nov', totalProjection: 109.60, agentProjection: 103.75 },
+    { name: 'Dec', totalProjection: 110.70, agentProjection: 104.20 },
   ];
 
   // Yield Projection 统计数据
@@ -210,7 +323,10 @@ export default function DashboardPage() {
                 <span className="material-icons-outlined text-sm">power_settings_new</span>
                 Deactivate
               </button>
-              <button className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-background-dark font-black text-xs shadow-[0_0_20px_rgba(163,230,53,0.15)] hover:scale-105 transition-all">
+              <button 
+                onClick={() => setShowAddFundsModal(true)}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-background-dark font-black text-xs shadow-[0_0_20px_rgba(163,230,53,0.15)] hover:scale-105 transition-all"
+              >
                 <span className="material-icons-outlined text-sm">add_box</span>
                 Add funds
               </button>
@@ -363,20 +479,20 @@ export default function DashboardPage() {
                       }}
                       labelStyle={{ color: '#a1a1aa' }}
                     />
-                    <Area 
+                    <Line 
                       type="monotone" 
                       dataKey="totalProjection" 
                       stroke="#A3E635" 
                       strokeWidth={2}
-                      fill="url(#totalGradient)" 
+                      dot={false}
                       name="Total APR"
                     />
-                    <Area 
+                    <Line 
                       type="monotone" 
                       dataKey="agentProjection" 
                       stroke="#3B82F6" 
                       strokeWidth={2}
-                      fill="url(#agentGradient)" 
+                      dot={false}
                       name="Agent APR"
                     />
                   </LineChart>
@@ -492,8 +608,8 @@ export default function DashboardPage() {
         {/* Promo Card */}
         <div className="p-1 rounded-[24px] bg-linear-to-br from-primary/30 to-background-dark border border-white/5 overflow-hidden">
           <div className="p-6 space-y-4 relative">
-            <div className="absolute top-0 right-0 p-8 opacity-40">
-              <div className="w-16 h-16 rounded-full border-2 border-primary animate-pulse" />
+            <div className="absolute -top-4 -right-4 opacity-40">
+              <div className="w-20 h-20 rounded-full border-2 border-primary animate-pulse" />
             </div>
             <span className="bg-primary/20 text-primary text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest border border-primary/10">
               New 15% APR
@@ -506,7 +622,7 @@ export default function DashboardPage() {
               <p className="text-[11px] text-slate-500 font-bold uppercase tracking-widest mb-2">Total PATH Rewards</p>
               <div className="flex items-center gap-2">
                 <div className="w-6 h-6 bg-white/10 rounded-full flex items-center justify-center text-[10px]">P</div>
-                <span className="text-lg font-black text-white">0 <span className="text-slate-500 font-bold">PATH</span></span>
+                <span className="text-lg font-black text-white">17.92 <span className="text-slate-500 font-bold">PATH</span></span>
               </div>
             </div>
 
@@ -577,6 +693,74 @@ export default function DashboardPage() {
           </button>
         </div>
       </div>
+
+      {/* Add Funds Modal */}
+      {showAddFundsModal && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-zinc-900 border border-white/10 rounded-2xl w-full max-w-md p-6 relative shadow-2xl">
+            {/* Close Button */}
+            <button 
+              onClick={() => setShowAddFundsModal(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors"
+            >
+              <span className="material-icons-outlined">close</span>
+            </button>
+
+            {/* Header */}
+            <div className="mb-6">
+              <span className="text-primary text-xs font-bold uppercase tracking-widest">Top Up</span>
+              <h2 className="text-xl font-bold text-white mt-1">Add funds to Path Agent</h2>
+            </div>
+
+            {/* Input Section */}
+            <div className="space-y-4">
+              <div className="flex gap-2">
+                {/* Token Selector - Fixed Layout */}
+                <div className="bg-zinc-800 border border-white/10 rounded-xl p-4 flex flex-col justify-center gap-1 min-w-[140px]">
+                  <span className="text-[10px] text-slate-500 uppercase font-bold">Using</span>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                      <span className="material-icons-outlined text-white text-sm">attach_money</span>
+                    </div>
+                    <span className="font-bold text-white">USDC</span>
+                  </div>
+                </div>
+
+                {/* Amount Input */}
+                <div className="flex-1 bg-zinc-800 border border-white/10 rounded-xl p-4">
+                  <span className="text-[10px] text-slate-500 uppercase font-bold block mb-1">Amount</span>
+                  <input 
+                    type="number"
+                    value={addFundsAmount}
+                    onChange={(e) => setAddFundsAmount(e.target.value)}
+                    placeholder="0"
+                    className="w-full bg-transparent text-2xl font-bold text-white outline-none placeholder:text-zinc-600"
+                  />
+                </div>
+              </div>
+
+              {/* Balance Info */}
+              <div className="text-right text-sm text-slate-400">
+                Balance: <span className="text-white font-medium">{parseFloat(eoaBalance).toFixed(4)} USDC</span>
+              </div>
+
+              {/* Submit Button */}
+              <button 
+                onClick={handleDeposit}
+                disabled={!addFundsAmount || parseFloat(addFundsAmount) <= 0 || isDepositing}
+                className="w-full bg-zinc-700 hover:bg-zinc-600 disabled:bg-zinc-800 disabled:text-zinc-500 text-white font-bold py-4 rounded-xl transition-all flex items-center justify-center gap-2"
+              >
+                {isDepositing ? (
+                  <>
+                    <span className="animate-spin material-icons-outlined text-sm">refresh</span>
+                    Processing...
+                  </>
+                ) : 'Add funds'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

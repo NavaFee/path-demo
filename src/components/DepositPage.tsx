@@ -222,6 +222,14 @@ export default function DepositPage({ onNavigate }: DepositPageProps) {
                   </>
                 ) : 'Confirm & Continue'}
               </button>
+
+              {/* Deposit Later Link */}
+              <button
+                onClick={() => onNavigate?.('dashboard')}
+                className="w-full text-center text-slate-400 hover:text-white text-sm font-medium py-2 transition-colors"
+              >
+                Deposit later
+              </button>
             </div>
           </>
         ) : (
