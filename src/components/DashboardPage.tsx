@@ -100,20 +100,23 @@ export default function DashboardPage() {
             <div>
               <p className="text-[11px] text-slate-500 font-bold uppercase tracking-widest mb-2">Total balance</p>
               <h2 className="text-4xl font-display font-black text-white leading-none">
-                {agentWallet.virtualBalance.toFixed(2)} <span className="text-xl text-slate-500 font-bold ml-1">USDC</span>
+                {(agentWallet.totalDeposited + totalEarnings).toFixed(2)} <span className="text-xl text-slate-500 font-bold ml-1">USDC</span>
               </h2>
             </div>
             <div>
               <p className="text-[11px] text-slate-500 font-bold uppercase tracking-widest mb-2">Total deposited</p>
               <div className="flex items-baseline gap-1">
-                <span className="text-lg font-bold text-slate-300">{agentWallet.virtualBalance.toFixed(2)} USDC</span>
+                <span className="text-lg font-bold text-slate-300">{agentWallet.totalDeposited.toFixed(2)} USDC</span>
               </div>
             </div>
             <div>
               <p className="text-[11px] text-slate-500 font-bold uppercase tracking-widest mb-2">Lifetime earnings</p>
               <div className="flex items-center gap-2">
                 <span className="text-lg font-bold text-primary">
-                  {totalEarnings.toFixed(4)} USDC ({((totalEarnings / Math.max(agentWallet.virtualBalance, 1)) * 100).toFixed(2)}%)
+                  +{totalEarnings.toFixed(4)} USDC 
+                  <span className="text-sm ml-1 opacity-80">
+                    ({agentWallet.totalDeposited > 0 ? ((totalEarnings / agentWallet.totalDeposited) * 100).toFixed(2) : '0.00'}%)
+                  </span>
                 </span>
               </div>
             </div>

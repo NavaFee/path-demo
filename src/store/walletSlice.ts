@@ -12,6 +12,7 @@ const initialState: WalletState = {
   agentWallet: {
     address: AGENT_WALLET_ADDRESS,
     virtualBalance: 0,
+    totalDeposited: 0,
   },
   pendingDeposit: {
     amount: 0,
@@ -47,9 +48,10 @@ const walletSlice = createSlice({
       }
     },
 
-    // 存款成功后增加虚拟余额
+    // 存款成功后增加虚拟余额和累计存款
     addVirtualBalance: (state, action: PayloadAction<number>) => {
       state.agentWallet.virtualBalance += action.payload;
+      state.agentWallet.totalDeposited += action.payload;
       // 重置 pending 状态
       state.pendingDeposit = {
         amount: 0,

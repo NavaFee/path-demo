@@ -7,6 +7,7 @@ export interface EOAWallet {
 export interface AgentWallet {
   address: string;
   virtualBalance: number; // USDC 余额 (6 decimals 标准化后的数值)
+  totalDeposited: number; // 累计存款金额
 }
 
 export type DepositStatus = 'idle' | 'pending' | 'confirming' | 'success' | 'failed';
