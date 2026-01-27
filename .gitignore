@@ -1,0 +1,43 @@
+.agent/
+
+# Dependencies
+path-protocol-mvp/
+node_modules
+.pnpm-store
+
+# Next.js
+.next
+out
+build
+
+# Testing
+coverage
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+.DS_Store
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Vercel
+.vercel
+
+# PWA
+public/sw.js
+public/workbox-*.js

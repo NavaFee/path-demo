@@ -1,0 +1,133 @@
+@use '../styles/variables' as *;
+
+.card {
+  padding: $spacing-xl;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-lg;
+
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+  }
+}
+
+.network {
+  font-size: 12px;
+  color: $color-text-muted;
+  background: rgba($color-info, 0.1);
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid rgba($color-info, 0.2);
+}
+
+.inputGroup {
+  margin-bottom: $spacing-lg;
+}
+
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  padding: $spacing-md;
+  transition: border-color $transition-fast;
+
+  &:focus-within {
+    border-color: $color-primary;
+  }
+}
+
+.input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: $color-text;
+  font-size: 24px;
+  font-family: $font-heading;
+  font-weight: 600;
+
+  &::placeholder {
+    color: $color-surface-light;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+  }
+}
+
+.currency {
+  font-size: 16px;
+  color: $color-text-muted;
+  font-weight: 500;
+  margin-left: $spacing-sm;
+}
+
+.quickAmounts {
+  display: flex;
+  gap: $spacing-sm;
+  margin-top: $spacing-md;
+}
+
+.quickBtn {
+  flex: 1;
+  padding: $spacing-sm;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid $color-border;
+  border-radius: $radius-sm;
+  color: $color-text-muted;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all $transition-fast;
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: $color-primary;
+    color: $color-primary;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.depositBtn {
+  width: 100%;
+  padding: $spacing-md $spacing-lg;
+  font-size: 16px;
+}
+
+.txInfo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-sm;
+  margin-top: $spacing-md;
+  font-size: 13px;
+  color: $color-text-muted;
+
+  a {
+    color: $color-cta;
+    font-family: monospace;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.notice {
+  margin-top: $spacing-md;
+  font-size: 12px;
+  color: $color-warning;
+  text-align: center;
+  opacity: 0.8;
+}

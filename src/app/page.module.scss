@@ -1,0 +1,101 @@
+@use '../styles/variables' as *;
+
+.main {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  flex: 1;
+  padding: $spacing-2xl $spacing-lg;
+  padding-top: 100px; // Header 高度补偿
+}
+
+// 加载状态
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: $spacing-md;
+
+  p {
+    color: $color-text-muted;
+    font-size: 16px;
+  }
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 3px solid $color-surface-light;
+  border-top-color: $color-cta;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+// Hero 区域
+.hero {
+  max-width: 1000px;
+  margin: 0 auto;
+  text-align: center;
+  padding: $spacing-2xl 0;
+}
+
+.title {
+  font-size: clamp(48px, 8vw, 72px);
+  font-weight: 700;
+  margin-bottom: $spacing-lg;
+  letter-spacing: 2px;
+}
+
+.subtitle {
+  font-size: clamp(18px, 3vw, 24px);
+  color: $color-text-muted;
+  margin-bottom: $spacing-2xl;
+  line-height: 1.5;
+}
+
+// Feature Cards
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: $spacing-lg;
+  margin-top: $spacing-2xl;
+}
+
+.featureCard {
+  padding: $spacing-xl;
+  text-align: center;
+  transition: all $transition-base;
+  cursor: default;
+
+  &:hover {
+    transform: translateY(-4px);
+    border-color: $color-border-light;
+  }
+
+  h3 {
+    font-size: 20px;
+    margin-bottom: $spacing-sm;
+    color: $color-text;
+  }
+
+  p {
+    font-size: 14px;
+    color: $color-text-muted;
+    line-height: 1.5;
+  }
+}
+
+.featureIcon {
+  font-size: 48px;
+  margin-bottom: $spacing-md;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

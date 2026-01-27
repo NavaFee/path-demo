@@ -1,0 +1,226 @@
+@use 'variables' as *;
+
+// ===== CSS Reset & 全局样式 =====
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  font-family: $font-body;
+  background: $color-background;
+  color: $color-text;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+// 链接样式
+a {
+  color: $color-cta;
+  text-decoration: none;
+  transition: color $transition-fast;
+
+  &:hover {
+    color: $color-cta-hover;
+  }
+}
+
+// 按钮基础
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+
+// 滚动条样式
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: $color-surface;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: $color-surface-light;
+  border-radius: 4px;
+
+  &:hover {
+    background: lighten($color-surface-light, 10%);
+  }
+}
+
+// 选中文本
+::selection {
+  background: rgba($color-cta, 0.3);
+  color: $color-text;
+}
+
+// ===== 通用组件类 =====
+.glass-card {
+  background: $glass-bg;
+  backdrop-filter: $glass-blur;
+  -webkit-backdrop-filter: $glass-blur;
+  border: $glass-border;
+  border-radius: $radius-lg;
+  box-shadow: $glass-shadow;
+}
+
+.glass-card-light {
+  background: $glass-bg-light;
+  backdrop-filter: $glass-blur;
+  -webkit-backdrop-filter: $glass-blur;
+  border: $glass-border;
+  border-radius: $radius-md;
+}
+
+// 主按钮
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-sm;
+  padding: $spacing-md $spacing-lg;
+  background: linear-gradient(135deg, $color-cta, darken($color-cta, 10%));
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  border-radius: $radius-md;
+  transition: all $transition-base;
+  border: none;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, $color-cta-hover, darken($color-cta-hover, 10%));
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba($color-cta, 0.4);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// 次要按钮
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-sm;
+  padding: $spacing-md $spacing-lg;
+  background: transparent;
+  color: $color-text;
+  font-weight: 500;
+  font-size: 16px;
+  border-radius: $radius-md;
+  border: 1px solid $color-border-light;
+  transition: all $transition-base;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: $color-cta;
+    color: $color-cta;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// 金色按钮
+.btn-gold {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-sm;
+  padding: $spacing-md $spacing-lg;
+  background: linear-gradient(135deg, $color-primary, $color-secondary);
+  color: $color-background;
+  font-weight: 600;
+  font-size: 16px;
+  border-radius: $radius-md;
+  transition: all $transition-base;
+  border: none;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    box-shadow: 0 4px 20px rgba($color-primary, 0.4);
+    transform: translateY(-2px);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// 文字样式
+.text-gradient {
+  background: linear-gradient(135deg, $color-primary, $color-cta);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-muted {
+  color: $color-text-muted;
+}
+
+// 标题样式
+h1, h2, h3, h4, h5, h6 {
+  font-family: $font-heading;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+// 容器
+.container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 $spacing-lg;
+
+  @media (max-width: 768px) {
+    padding: 0 $spacing-md;
+  }
+}
+
+// 加载动画
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}

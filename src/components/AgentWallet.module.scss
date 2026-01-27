@@ -1,0 +1,105 @@
+@use '../styles/variables' as *;
+
+.card {
+  padding: $spacing-xl;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $spacing-md;
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  font-family: $font-heading;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.icon {
+  color: $color-primary;
+  font-size: 20px;
+}
+
+.badge {
+  font-size: 11px;
+  padding: 4px 8px;
+  background: linear-gradient(135deg, rgba($color-cta, 0.2), rgba($color-cta, 0.1));
+  border: 1px solid rgba($color-cta, 0.3);
+  border-radius: 4px;
+  color: $color-cta;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.address {
+  font-family: monospace;
+  font-size: 14px;
+  color: $color-text-muted;
+  background: rgba(0, 0, 0, 0.2);
+  padding: $spacing-sm $spacing-md;
+  border-radius: $radius-sm;
+  margin-bottom: $spacing-lg;
+}
+
+.balance {
+  text-align: center;
+  padding: $spacing-lg 0;
+  border-top: 1px solid $color-border;
+  border-bottom: 1px solid $color-border;
+  margin-bottom: $spacing-lg;
+}
+
+.label {
+  display: block;
+  font-size: 12px;
+  color: $color-text-muted;
+  margin-bottom: $spacing-xs;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.value {
+  font-family: $font-heading;
+  font-size: 32px;
+  font-weight: 700;
+  background: linear-gradient(135deg, $color-text, $color-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $spacing-md;
+}
+
+.stat {
+  text-align: center;
+}
+
+.statLabel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $spacing-xs;
+  font-size: 12px;
+  color: $color-text-muted;
+  margin-bottom: $spacing-xs;
+}
+
+.statValue {
+  font-family: $font-heading;
+  font-size: 18px;
+  font-weight: 600;
+  color: $color-text;
+}
+
+.earnings {
+  color: $color-success;
+}

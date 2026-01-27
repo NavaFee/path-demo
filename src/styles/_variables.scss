@@ -1,0 +1,56 @@
+// ===== 设计系统变量 =====
+// 基于 Glassmorphism 风格 + DeFi/Crypto 主题
+
+// 颜色系统
+$color-primary: #F59E0B;       // 琥珀金
+$color-secondary: #FBBF24;     // 浅金
+$color-cta: #8B5CF6;           // 紫色 CTA
+$color-cta-hover: #7C3AED;     // 紫色 hover
+$color-background: #0F172A;    // 深蓝黑
+$color-surface: #1E293B;       // 卡片背景
+$color-surface-light: #334155; // 浅表面
+$color-text: #F8FAFC;          // 主文字
+$color-text-muted: #94A3B8;    // 次要文字
+$color-border: rgba(255, 255, 255, 0.1);
+$color-border-light: rgba(255, 255, 255, 0.2);
+
+// 状态颜色
+$color-success: #10B981;
+$color-error: #EF4444;
+$color-warning: #F59E0B;
+$color-info: #3B82F6;
+
+// 协议品牌色
+$color-aave: #B6509E;
+$color-compound: #00D395;
+$color-morpho: #4B82FF;
+
+// Glassmorphism 效果
+$glass-bg: rgba(30, 41, 59, 0.8);
+$glass-bg-light: rgba(51, 65, 85, 0.6);
+$glass-border: 1px solid rgba(255, 255, 255, 0.1);
+$glass-blur: blur(16px);
+$glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+
+// 圆角
+$radius-sm: 8px;
+$radius-md: 12px;
+$radius-lg: 16px;
+$radius-xl: 24px;
+
+// 间距
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 16px;
+$spacing-lg: 24px;
+$spacing-xl: 32px;
+$spacing-2xl: 48px;
+
+// 字体
+$font-heading: 'Orbitron', sans-serif;
+$font-body: 'Exo 2', sans-serif;
+
+// 动画
+$transition-fast: 150ms ease;
+$transition-base: 200ms ease;
+$transition-slow: 300ms ease;
