@@ -1,72 +1,65 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { usePrivy } from '@privy-io/react-auth';
 import { useAppDispatch } from '@/hooks/useRedux';
 import { setEOAConnected, disconnectEOA } from '@/store/walletSlice';
 import Header from '@/components/Header';
-import Dashboard from '@/components/Dashboard';
-import styles from './page.module.scss';
+import Footer from '@/components/Footer';
+import LandingPage from '@/components/LandingPage';
+import DepositPage from '@/components/DepositPage';
+import DashboardPage from '@/components/DashboardPage';
+
+type ViewType = 'landing' | 'deposit' | 'dashboard';
 
 export default function Home() {
   const { ready, authenticated, user } = usePrivy();
   const dispatch = useAppDispatch();
+  const [currentView, setCurrentView] = useState<ViewType>('landing');
 
-  // 同步 Privy 用户状态到 Redux
+  // Sync EOA wallet state with Redux
   useEffect(() => {
-    if (ready) {
-      if (authenticated && user?.wallet?.address) {
-        dispatch(
-          setEOAConnected({
-            address: user.wallet.address,
-            isConnected: true,
-          })
-        );
-      } else {
-        dispatch(disconnectEOA());
-      }
+    if (authenticated && user?.wallet?.address) {
+      dispatch(setEOAConnected({ address: user.wallet.address, isConnected: true }));
+    } else if (!authenticated) {
+      dispatch(disconnectEOA());
+      setCurrentView('landing');
     }
-  }, [ready, authenticated, user, dispatch]);
+  }, [authenticated, user, dispatch]);
+
+  const handleNavigate = (view: ViewType) => {
+    if (view === 'deposit' && !authenticated) {
+      return; // Don't navigate to deposit if not authenticated
+    }
+    setCurrentView(view);
+  };
+
+  if (!ready) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-slate-500 text-sm uppercase tracking-widest">Initializing</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <main className={styles.main}>
-      <Header />
-      <div className={styles.content}>
-        {!ready ? (
-          <div className={styles.loading}>
-            <div className={styles.spinner} />
-            <p>Loading...</p>
-          </div>
-        ) : authenticated ? (
-          <Dashboard />
-        ) : (
-          <div className={styles.hero}>
-            <h1 className={styles.title}>
-              <span className="text-gradient">PATH</span> Protocol
-            </h1>
-            <p className={styles.subtitle}>
-              Automated DeFi yield optimization powered by intelligent rebalancing
-            </p>
-            <div className={styles.features}>
-              <div className={`${styles.featureCard} glass-card`}>
-                <div className={styles.featureIcon}>🔄</div>
-                <h3>Auto-Rebalance</h3>
-                <p>AI-driven allocation across top DeFi protocols</p>
-              </div>
-              <div className={`${styles.featureCard} glass-card`}>
-                <div className={styles.featureIcon}>📈</div>
-                <h3>Yield Optimize</h3>
-                <p>Maximize returns with real-time APR tracking</p>
-              </div>
-              <div className={`${styles.featureCard} glass-card`}>
-                <div className={styles.featureIcon}>🛡️</div>
-                <h3>Secure</h3>
-                <p>Non-custodial smart contract architecture</p>
-              </div>
-            </div>
-          </div>
+    <div className="flex flex-col min-h-screen">
+      <Header currentView={currentView} onNavigate={handleNavigate} />
+      <main className="flex-grow pt-24 pb-12 px-6 max-w-7xl mx-auto w-full">
+        {currentView === 'landing' && (
+          <LandingPage onNavigate={handleNavigate} />
         )}
-      </div>
-    </main>
+        {currentView === 'deposit' && (
+          <DepositPage onNavigate={handleNavigate} />
+        )}
+        {currentView === 'dashboard' && (
+          <DashboardPage />
+        )}
+      </main>
+      <Footer />
+    </div>
   );
 }

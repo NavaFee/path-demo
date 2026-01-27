@@ -1,23 +1,23 @@
 import type { Metadata } from 'next';
-import { Orbitron, Exo_2 } from 'next/font/google';
+import { Inter, Space_Grotesk } from 'next/font/google';
 import Providers from '@/components/Providers';
 import '@/styles/globals.scss';
 
-const orbitron = Orbitron({
+const inter = Inter({
   subsets: ['latin'],
-  variable: '--font-heading',
+  variable: '--font-sans',
   display: 'swap',
 });
 
-const exo2 = Exo_2({
+const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
-  variable: '--font-body',
+  variable: '--font-display',
   display: 'swap',
 });
 
 export const metadata: Metadata = {
-  title: 'PATH Protocol - DeFi Automation Platform',
-  description: 'Automated yield optimization and rebalancing for your crypto assets on Base',
+  title: 'PATH Protocol | Yield Automation',
+  description: 'Institutional-grade DeFi infrastructure for automated USDC yield optimization on the Base network.',
   keywords: ['DeFi', 'Yield', 'Automation', 'Base', 'Crypto', 'USDC'],
 };
 
@@ -27,8 +27,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${orbitron.variable} ${exo2.variable}`}>
-      <body>
+    <html lang="en" className={`dark ${inter.variable} ${spaceGrotesk.variable}`}>
+      <head>
+        <link 
+          href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" 
+          rel="stylesheet" 
+        />
+      </head>
+      <body className="min-h-screen overflow-x-hidden grid-bg">
         <Providers>{children}</Providers>
       </body>
     </html>
