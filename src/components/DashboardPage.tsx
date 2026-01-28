@@ -681,7 +681,7 @@ export default function DashboardPage() {
               return (
                 <div key={protocol.id} className="flex items-center gap-3">
                   <IconImage 
-                    src={protoInfo?.icon}
+                    src={protoInfo?.icon ?? ''}
                     fallbackText={protoInfo?.iconFallback || protocol.name[0]}
                     fallbackColor={protoInfo?.color || 'bg-blue-600'}
                     alt={protocol.name}
