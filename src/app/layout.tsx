@@ -19,6 +19,9 @@ export const metadata: Metadata = {
   title: 'PATH Protocol | Yield Automation',
   description: 'Institutional-grade DeFi infrastructure for automated USDC yield optimization on the Base network.',
   keywords: ['DeFi', 'Yield', 'Automation', 'Base', 'Crypto', 'USDC'],
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({

@@ -34,7 +34,7 @@ export default function Providers({ children }: ProvidersProps) {
           appearance: {
             theme: 'dark',
             accentColor: '#8B5CF6', // 紫色 CTA
-            logo: '/logo.svg',
+            logo: '/icons/logo/path-icon.svg',
             showWalletLoginFirst: true,
           },
           // 登录方式
