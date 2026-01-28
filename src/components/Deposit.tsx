@@ -91,7 +91,7 @@ export default function Deposit() {
         address: USDC_ADDRESS,
         abi: ERC20_ABI,
         functionName: 'transfer',
-        args: [agentWallet.address as `0x${string}`, usdcAmount],
+        args: [address as `0x${string}`, usdcAmount],
         account: address,
       });
 

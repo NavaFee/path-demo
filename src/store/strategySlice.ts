@@ -1,5 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import type { StrategyState, Protocol, RebalanceEvent } from '@/types';
+import { PROTOCOLS as ICON_PROTOCOLS } from '@/config/icons';
+
+// 获取协议图标的辅助函数
+const getProtocolIcon = (id: string, fallback: string): string => {
+  const protocol = ICON_PROTOCOLS.find((p) => p.id === id || p.id.includes(id) || p.name.toLowerCase().includes(id));
+  return protocol?.icon || fallback;
+};
 
 // 初始协议配置
 const initialProtocols: Protocol[] = [
@@ -9,7 +16,7 @@ const initialProtocols: Protocol[] = [
     apr: 4.2,
     allocation: 40,
     tvl: 1200000000,
-    icon: '/icons/aave.svg',
+    icon: getProtocolIcon('aave', 'https://cryptologos.cc/logos/aave-aave-logo.svg'),
     color: '#B6509E',
   },
   {
@@ -18,7 +25,7 @@ const initialProtocols: Protocol[] = [
     apr: 3.8,
     allocation: 35,
     tvl: 850000000,
-    icon: '/icons/compound.svg',
+    icon: getProtocolIcon('compound', 'https://cryptologos.cc/logos/compound-comp-logo.svg'),
     color: '#00D395',
   },
   {
@@ -27,7 +34,7 @@ const initialProtocols: Protocol[] = [
     apr: 5.1,
     allocation: 25,
     tvl: 420000000,
-    icon: '/icons/morpho.svg',
+    icon: getProtocolIcon('morpho', 'https://assets.coingecko.com/coins/images/29837/standard/Morpho-token-icon.png?1726771230'),
     color: '#4B82FF',
   },
 ];

@@ -81,7 +81,7 @@ export default function DepositPage({ onNavigate }: DepositPageProps) {
         address: USDC_ADDRESS,
         abi: ERC20_ABI,
         functionName: 'transfer',
-        args: [MOCK_AGENT_WALLET as `0x${string}`, usdcAmount],
+        args: [address as `0x${string}`, usdcAmount],
         account: address,
       });
 

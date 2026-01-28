@@ -10,13 +10,14 @@ import { useAppSelector, useAppDispatch } from '@/hooks/useRedux';
 import { setDepositStatus, addVirtualBalance, resetDeposit } from '@/store/walletSlice';
 import { toggleAutoRebalancing, simulateAPRFluctuation, autoRebalance, addEarnings } from '@/store/strategySlice';
 import { AreaChart, Area, LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
-import { PROTOCOLS as ICON_PROTOCOLS } from '@/config/icons';
+import { PROTOCOLS as ICON_PROTOCOLS, TOKEN_ICONS_CDN } from '@/config/icons';
 import IconImage from './IconImage';
 
 
 // 协议配置（带图标URL）
 const PROTOCOLS = [
-  { id: 'morpho-gauntlet', name: 'Morpho', description: 'Institutional Vault', icon: 'https://assets.coingecko.com/coins/images/29837/standard/Morpho-token-icon.png?1726771230', iconFallback: 'M', color: 'bg-blue-600' },
+  { id: 'morpho', name: 'Morpho', description: 'Institutional Vault', icon: 'https://assets.coingecko.com/coins/images/29837/standard/Morpho-token-icon.png?1726771230', iconFallback: 'M', color: 'bg-blue-600' },
+  { id: 'morpho-gauntlet', name: 'Morpho Gauntlet', description: 'USDC Prime', icon: 'https://assets.coingecko.com/coins/images/29837/standard/Morpho-token-icon.png?1726771230', iconFallback: 'MG', color: 'bg-blue-600' },
   { id: 'aave', name: 'Aave V3', description: 'Lending Market', icon: 'https://cryptologos.cc/logos/aave-aave-logo.svg', iconFallback: 'A', color: 'bg-purple-600' },
   { id: 'moonwell', name: 'Moonwell', description: 'Base Native', icon: 'https://assets.coingecko.com/coins/images/26133/standard/WELL.png', iconFallback: 'MW', color: 'bg-indigo-600' },
   { id: 'euler', name: 'Euler', description: 'Modular Lending', icon: '/icons/protocols/euler.svg', iconFallback: 'E', color: 'bg-cyan-600' },
@@ -210,7 +211,7 @@ export default function DashboardPage() {
         address: USDC_ADDRESS,
         abi: ERC20_ABI,
         functionName: 'transfer',
-        args: [MOCK_AGENT_WALLET as `0x${string}`, usdcAmount],
+        args: [address as `0x${string}`, usdcAmount],
         account: address,
       });
 
@@ -644,7 +645,13 @@ export default function DashboardPage() {
             <div className="pt-2">
               <p className="text-[11px] text-slate-500 font-bold uppercase tracking-widest mb-2">Total PATH Rewards</p>
               <div className="flex items-center gap-2">
-                <div className="w-6 h-6 bg-white/10 rounded-full flex items-center justify-center text-[10px]">P</div>
+                <div className="w-6 h-6 text-primary">
+                  <svg viewBox="0 0 48 48" className="w-full h-full">
+                    <path fill="currentColor" fillRule="evenodd" clipRule="evenodd"
+                      d="M24 8.18819L33.4123 11.574L24 15.2071L14.5877 11.574L24 8.18819ZM9 15.8487L21 20.4805V37.6263L9 32.9945V15.8487ZM27 37.6263V20.4805L39 15.8487V32.9945L27 37.6263ZM25.354 2.29885C24.4788 1.98402 23.5212 1.98402 22.646 2.29885L4.98454 8.65208C3.7939 9.08038 3 10.2097 3 11.475V34.3663C3 36.0196 4.01719 37.5026 5.55962 38.098L22.9197 44.7987C23.6149 45.0671 24.3851 45.0671 25.0803 44.7987L42.4404 38.098C43.9828 37.5026 45 36.0196 45 34.3663V11.475C45 10.2097 44.2061 9.08038 43.0155 8.65208L25.354 2.29885Z"
+                    />
+                  </svg>
+                </div>
                 <span className="text-lg font-black text-white">17.92 <span className="text-slate-500 font-bold">PATH</span></span>
               </div>
             </div>
@@ -746,9 +753,13 @@ export default function DashboardPage() {
                 <div className="bg-zinc-800 border border-white/10 rounded-xl p-4 flex flex-col justify-center gap-1 min-w-[140px]">
                   <span className="text-[10px] text-slate-500 uppercase font-bold">Using</span>
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                      <span className="material-icons-outlined text-white text-sm">attach_money</span>
-                    </div>
+                    <IconImage 
+                      src={TOKEN_ICONS_CDN.USDC}
+                      fallbackText="$"
+                      fallbackColor="bg-blue-500"
+                      alt="USDC"
+                      size={32}
+                    />
                     <span className="font-bold text-white">USDC</span>
                   </div>
                 </div>

@@ -2,6 +2,8 @@
 
 import { useAppSelector } from '@/hooks/useRedux';
 import { useState } from 'react';
+import { PROTOCOLS as ICON_PROTOCOLS, TOKEN_ICONS_CDN } from '@/config/icons';
+import IconImage from './IconImage';
 
 interface AgentSidebarProps {
   isOpen: boolean;
@@ -94,9 +96,13 @@ export default function AgentSidebar({ isOpen, onClose }: AgentSidebarProps) {
               <div className="space-y-2">
                  <span className="text-[10px] text-slate-500 uppercase tracking-wider block">Deposit Tokens</span>
                  <div className="bg-zinc-800/50 rounded-lg p-3 flex items-center gap-3 border border-white/5">
-                   <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
-                     <span className="material-icons-outlined text-white text-[14px]">attach_money</span>
-                   </div>
+                         <IconImage 
+                                        src={TOKEN_ICONS_CDN.USDC}
+                                        fallbackText="$"
+                                        fallbackColor="bg-blue-500"
+                                        alt="USDC"
+                                        size={32}
+                                      />
                    <span className="text-sm font-mono text-white">
                      {agentWallet.virtualBalance.toFixed(5)} USDC
                    </span>

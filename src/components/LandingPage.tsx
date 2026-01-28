@@ -101,7 +101,7 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
           </div>
           <div>
             <p className="text-xs font-bold uppercase tracking-wide">14,291 Active Agents</p>
-            <p className="text-[10px] opacity-60">Rebalancing every 15 minutes</p>
+            {/* <p className="text-[10px] opacity-60">Rebalancing every 15 minutes</p> */}
           </div>
         </div>
       </div>
