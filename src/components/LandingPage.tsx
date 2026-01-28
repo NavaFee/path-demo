@@ -1,16 +1,17 @@
 'use client';
 
 import { usePrivy } from '@privy-io/react-auth';
+import IconImage from './IconImage';
 
 interface LandingPageProps {
   onNavigate?: (view: 'deposit' | 'dashboard') => void;
 }
 
 const PROTOCOLS = [
-  { id: 'morpho', name: 'Morpho', apr: 7.21, description: 'Institutional Vault', icon: 'bolt' },
-  { id: 'aave', name: 'Aave V3', apr: 3.28, description: 'Lending Market', icon: 'savings' },
-  { id: 'moonwell', name: 'Moonwell', apr: 4.80, description: 'Base Native', icon: 'account_balance' },
-  { id: 'euler', name: 'Euler', apr: 2.82, description: 'Modular Lending', icon: 'view_agenda' },
+  { id: 'morpho', name: 'Morpho', apr: 7.21, description: 'Institutional Vault', icon: 'https://assets.coingecko.com/coins/images/29837/standard/Morpho-token-icon.png?1726771230', iconFallback: 'M', color: 'bg-blue-600' },
+  { id: 'aave', name: 'Aave V3', apr: 3.28, description: 'Lending Market', icon: 'https://cryptologos.cc/logos/aave-aave-logo.svg', iconFallback: 'A', color: 'bg-purple-600' },
+  { id: 'moonwell', name: 'Moonwell', apr: 4.80, description: 'Base Native', icon: 'https://assets.coingecko.com/coins/images/26133/standard/WELL.png', iconFallback: 'MW', color: 'bg-indigo-600' },
+  { id: 'euler', name: 'Euler', apr: 2.82, description: 'Modular Lending', icon: '/icons/protocols/euler.svg', iconFallback: 'E', color: 'bg-cyan-600' },
 ];
 
 export default function LandingPage({ onNavigate }: LandingPageProps) {
@@ -69,11 +70,13 @@ export default function LandingPage({ onNavigate }: LandingPageProps) {
               className="bg-card-dark border border-border-dark p-6 rounded-xl hover:border-primary/50 transition-colors group cursor-default"
             >
               <div className="flex justify-between items-start mb-6">
-                <div className="w-10 h-10 rounded-full flex items-center justify-center bg-neutral-800">
-                  <span className="material-icons-outlined text-slate-400 group-hover:text-primary transition-colors">
-                    {protocol.icon}
-                  </span>
-                </div>
+                <IconImage 
+                  src={protocol.icon}
+                  fallbackText={protocol.iconFallback}
+                  fallbackColor={protocol.color}
+                  alt={protocol.name}
+                  size={40}
+                />
                 <span className="text-primary text-sm font-bold">{protocol.apr}%</span>
               </div>
               <p className="font-display font-bold text-lg uppercase tracking-wider">

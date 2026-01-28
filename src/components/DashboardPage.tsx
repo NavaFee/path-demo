@@ -10,12 +10,17 @@ import { useAppSelector, useAppDispatch } from '@/hooks/useRedux';
 import { setDepositStatus, addVirtualBalance, resetDeposit } from '@/store/walletSlice';
 import { toggleAutoRebalancing, simulateAPRFluctuation, autoRebalance, addEarnings } from '@/store/strategySlice';
 import { AreaChart, Area, LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip } from 'recharts';
+import { PROTOCOLS as ICON_PROTOCOLS } from '@/config/icons';
+import IconImage from './IconImage';
 
+
+// 协议配置（带图标URL）
 const PROTOCOLS = [
-  { id: 'morpho', name: 'Morpho', description: 'Institutional Vault', icon: 'bolt', color: 'bg-blue-600' },
-  { id: 'aave', name: 'Aave V3', description: 'Lending Market', icon: 'savings', color: 'bg-purple-600' },
-  { id: 'moonwell', name: 'Moonwell', description: 'Base Native', icon: 'account_balance', color: 'bg-indigo-600' },
-  { id: 'euler', name: 'Euler', description: 'Modular Lending', icon: 'view_agenda', color: 'bg-cyan-600' },
+  { id: 'morpho-gauntlet', name: 'Morpho', description: 'Institutional Vault', icon: 'https://assets.coingecko.com/coins/images/29837/standard/Morpho-token-icon.png?1726771230', iconFallback: 'M', color: 'bg-blue-600' },
+  { id: 'aave', name: 'Aave V3', description: 'Lending Market', icon: 'https://cryptologos.cc/logos/aave-aave-logo.svg', iconFallback: 'A', color: 'bg-purple-600' },
+  { id: 'moonwell', name: 'Moonwell', description: 'Base Native', icon: 'https://assets.coingecko.com/coins/images/26133/standard/WELL.png', iconFallback: 'MW', color: 'bg-indigo-600' },
+  { id: 'euler', name: 'Euler', description: 'Modular Lending', icon: '/icons/protocols/euler.svg', iconFallback: 'E', color: 'bg-cyan-600' },
+  { id: 'compound', name: 'Compound', description: 'DeFi Lending', icon: 'https://cryptologos.cc/logos/compound-comp-logo.svg', iconFallback: 'C', color: 'bg-green-500' },
 ];
 
 // Mock 数据
@@ -32,12 +37,14 @@ const MOCK_EXECUTION_HISTORY = [
     subtitle: '10.10 USDC reallocated to 4.38% lending yield',
     fromProtocol: 'Morpho',
     fromSymbol: 'M',
+    fromIcon: 'https://assets.coingecko.com/coins/images/29837/standard/Morpho-token-icon.png?1726771230',
     fromColor: 'bg-blue-600',
     fromAmount: 10.1009,
     fromApr: 4.29,
     fromTxHash: '0x1234...5678',
     toProtocol: 'Moonwell',
     toSymbol: 'MW',
+    toIcon: 'https://assets.coingecko.com/coins/images/26133/standard/WELL.png',
     toColor: 'bg-purple-600',
     toAmount: 10.1009,
     toApr: 4.38,
@@ -50,12 +57,14 @@ const MOCK_EXECUTION_HISTORY = [
     subtitle: '10.10 USDC allocated to 4.26% lending yield',
     fromProtocol: 'Aave V3',
     fromSymbol: 'A',
+    fromIcon: 'https://cryptologos.cc/logos/aave-aave-logo.svg',
     fromColor: 'bg-purple-500',
     fromAmount: 10.10,
     fromApr: 3.85,
     fromTxHash: '0x2345...6789',
     toProtocol: 'Morpho',
     toSymbol: 'M',
+    toIcon: 'https://assets.coingecko.com/coins/images/29837/standard/Morpho-token-icon.png?1726771230',
     toColor: 'bg-blue-600',
     toAmount: 10.10,
     toApr: 4.26,
@@ -68,12 +77,14 @@ const MOCK_EXECUTION_HISTORY = [
     subtitle: '15.50 USDC reallocated to 5.12% lending yield',
     fromProtocol: 'Euler',
     fromSymbol: 'E',
+    fromIcon: '/icons/protocols/euler.svg',
     fromColor: 'bg-cyan-600',
     fromAmount: 15.50,
     fromApr: 3.21,
     fromTxHash: '0x3456...7890',
     toProtocol: 'Aave V3',
     toSymbol: 'A',
+    toIcon: 'https://cryptologos.cc/logos/aave-aave-logo.svg',
     toColor: 'bg-purple-500',
     toAmount: 15.50,
     toApr: 5.12,
@@ -86,12 +97,14 @@ const MOCK_EXECUTION_HISTORY = [
     subtitle: '25.00 USDC allocated to 6.45% lending yield',
     fromProtocol: 'Moonwell',
     fromSymbol: 'MW',
+    fromIcon: 'https://assets.coingecko.com/coins/images/26133/standard/WELL.png',
     fromColor: 'bg-purple-600',
     fromAmount: 25.00,
     fromApr: 4.80,
     fromTxHash: '0x4567...8901',
     toProtocol: 'Morpho',
     toSymbol: 'M',
+    toIcon: 'https://assets.coingecko.com/coins/images/29837/standard/Morpho-token-icon.png?1726771230',
     toColor: 'bg-blue-600',
     toAmount: 25.00,
     toApr: 6.45,
@@ -104,12 +117,14 @@ const MOCK_EXECUTION_HISTORY = [
     subtitle: '20.00 USDC reallocated to 7.21% lending yield',
     fromProtocol: 'Compound',
     fromSymbol: 'C',
+    fromIcon: 'https://cryptologos.cc/logos/compound-comp-logo.svg',
     fromColor: 'bg-green-500',
     fromAmount: 20.00,
     fromApr: 3.80,
     fromTxHash: '0x5678...9012',
     toProtocol: 'Morpho',
     toSymbol: 'M',
+    toIcon: 'https://assets.coingecko.com/coins/images/29837/standard/Morpho-token-icon.png?1726771230',
     toColor: 'bg-blue-600',
     toAmount: 20.00,
     toApr: 7.21,
@@ -374,7 +389,7 @@ export default function DashboardPage() {
               <div>
                 <p className="text-[11px] text-slate-500 font-bold uppercase tracking-widest mb-2">Annual projection</p>
                 <div className="flex items-center gap-2">
-                  <span className="bg-primary/20 text-primary px-3 py-1 rounded-full text-sm font-bold">
+                  <span className="bg-primary/20 text-primary px-3 py-1 rounded-full text-sm font-bold whitespace-nowrap">
                     +{annualProjection.toFixed(2)} USDC per year
                   </span>
                 </div>
@@ -561,9 +576,13 @@ export default function DashboardPage() {
                         <div className="flex-1">
                           <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-3">Withdraw from:</p>
                           <div className="flex items-center gap-3">
-                            <div className={`w-8 h-8 ${event.fromColor} rounded-full flex items-center justify-center`}>
-                              <span className="text-[10px] font-black text-white">{event.fromSymbol}</span>
-                            </div>
+                            <IconImage 
+                              src={event.fromIcon}
+                              fallbackText={event.fromSymbol}
+                              fallbackColor={event.fromColor}
+                              alt={event.fromProtocol}
+                              size={32}
+                            />
                             <span className="text-[14px] font-bold text-white">{event.fromAmount.toFixed(4)} USDC</span>
                             <span className="text-[12px] text-slate-400">{event.fromApr}%</span>
                             <button className="flex items-center gap-1 bg-zinc-800 hover:bg-zinc-700 px-2 py-1 rounded text-[10px] font-bold text-slate-300 transition-colors">
@@ -582,9 +601,13 @@ export default function DashboardPage() {
                         <div className="flex-1 text-right">
                           <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-3">Deposit to:</p>
                           <div className="flex items-center justify-end gap-3">
-                            <div className={`w-8 h-8 ${event.toColor} rounded-full flex items-center justify-center`}>
-                              <span className="text-[10px] font-black text-white">{event.toSymbol}</span>
-                            </div>
+                            <IconImage 
+                              src={event.toIcon}
+                              fallbackText={event.toSymbol}
+                              fallbackColor={event.toColor}
+                              alt={event.toProtocol}
+                              size={32}
+                            />
                             <span className="text-[14px] font-bold text-white">{event.toAmount.toFixed(4)} USDC</span>
                             <span className="text-[12px] text-primary font-bold">{event.toApr}%</span>
                             <button className="flex items-center gap-1 bg-zinc-800 hover:bg-zinc-700 px-2 py-1 rounded text-[10px] font-bold text-slate-300 transition-colors">
@@ -647,12 +670,16 @@ export default function DashboardPage() {
           <div className="space-y-3">
             <p className="text-[11px] text-slate-500 font-bold uppercase tracking-widest">Current Allocations</p>
             {protocols.filter(p => p.allocation > 0).map(protocol => {
-              const protoInfo = PROTOCOLS.find(pp => pp.id === protocol.id);
+              const protoInfo = PROTOCOLS.find(pp => pp.id === protocol.id || pp.name === protocol.name);
               return (
                 <div key={protocol.id} className="flex items-center gap-3">
-                  <div className={`w-8 h-8 rounded-lg ${protoInfo?.color || 'bg-blue-600'}/20 flex items-center justify-center`}>
-                    <span className="text-[10px] font-black uppercase">{protocol.name[0]}</span>
-                  </div>
+                  <IconImage 
+                    src={protoInfo?.icon}
+                    fallbackText={protoInfo?.iconFallback || protocol.name[0]}
+                    fallbackColor={protoInfo?.color || 'bg-blue-600'}
+                    alt={protocol.name}
+                    size={32}
+                  />
                   <span className="text-[14px] font-bold text-white">
                     {protocol.name} <span className="text-slate-400 ml-1">{protocol.apr.toFixed(2)}%</span>
                   </span>

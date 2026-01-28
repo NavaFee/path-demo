@@ -11,32 +11,10 @@ import {
   ERC20_ABI, 
   parseUSDC, 
 } from '@/utils/usdcContract';
+import { PROTOCOLS, ProtocolInfo, TOKEN_ICONS_CDN, CHAIN_ICONS_CDN } from '@/config/icons';
+import IconImage from './IconImage';
 
 const MOCK_AGENT_WALLET = '0xDA20fE7B606E04d8b4b978012094C4f672d82C2B';
-
-interface ProtocolConfig {
-  id: string;
-  name: string;
-  icon: string;
-  color: string;
-  apr: number;
-  enabled: boolean;
-  maxAllocation: number; // %
-  minAPR: number;        // %
-  minTVL: number;        // Millions
-}
-
-const INITIAL_PROTOCOLS: ProtocolConfig[] = [
-  { id: 'aave', name: 'AAVE', icon: 'A', color: 'bg-cyan-500', apr: 3.79, enabled: true, maxAllocation: 40, minAPR: 2.0, minTVL: 100 },
-  { id: 'compound', name: 'Compound', icon: 'C', color: 'bg-green-500', apr: 3.21, enabled: true, maxAllocation: 35, minAPR: 2.5, minTVL: 80 },
-  { id: 'euler', name: 'Euler USDC', icon: 'E', color: 'bg-blue-600', apr: 2.85, enabled: true, maxAllocation: 30, minAPR: 2.0, minTVL: 50 },
-  { id: 'fluid', name: 'Fluid', icon: 'F', color: 'bg-purple-500', apr: 3.86, enabled: true, maxAllocation: 25, minAPR: 3.0, minTVL: 30 },
-  { id: 'moonwell', name: 'Moonwell', icon: 'M', color: 'bg-indigo-500', apr: 2.94, enabled: true, maxAllocation: 30, minAPR: 2.0, minTVL: 40 },
-  { id: 'morpho-gauntlet', name: 'Morpho Gauntlet USDC Prime', icon: 'MG', color: 'bg-blue-500', apr: 4.35, enabled: true, maxAllocation: 40, minAPR: 3.5, minTVL: 100 },
-  { id: 'morpho-moonwell', name: 'Morpho Moonwell Flagship USDC', icon: 'MM', color: 'bg-blue-500', apr: 4.40, enabled: true, maxAllocation: 35, minAPR: 3.0, minTVL: 80 },
-  { id: 'morpho-seamless', name: 'Morpho Seamless USDC Vault', icon: 'MS', color: 'bg-blue-500', apr: 3.93, enabled: true, maxAllocation: 30, minAPR: 2.5, minTVL: 60 },
-  { id: 'morpho-steakhouse', name: 'Morpho Steakhouse USDC', icon: 'MSt', color: 'bg-blue-500', apr: 3.26, enabled: false, maxAllocation: 25, minAPR: 2.0, minTVL: 50 },
-];
 
 interface DepositPageProps {
   onNavigate?: (view: 'dashboard') => void;
@@ -46,7 +24,7 @@ export default function DepositPage({ onNavigate }: DepositPageProps) {
   const [amount, setAmount] = useState<string>('100.00');
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(1); // 1: Deposit, 2: Personalization, 3: Activate Agent, 4: Success
-  const [protocols, setProtocols] = useState<ProtocolConfig[]>(INITIAL_PROTOCOLS);
+  const [protocols, setProtocols] = useState<ProtocolInfo[]>(PROTOCOLS);
   const [expandedProtocol, setExpandedProtocol] = useState<string | null>(null);
   const { authenticated } = usePrivy();
   const { wallets } = useWallets();
@@ -63,7 +41,7 @@ export default function DepositPage({ onNavigate }: DepositPageProps) {
     setExpandedProtocol(prev => prev === id ? null : id);
   };
 
-  const updateProtocolConfig = (id: string, field: keyof ProtocolConfig, value: number) => {
+  const updateProtocolConfig = (id: string, field: keyof ProtocolInfo, value: number) => {
     setProtocols(prev =>
       prev.map(p => p.id === id ? { ...p, [field]: value } : p)
     );
@@ -194,9 +172,13 @@ export default function DepositPage({ onNavigate }: DepositPageProps) {
                 <label className="block text-sm text-slate-500 mb-2">From network</label>
                 <div className="flex items-center justify-between bg-zinc-900/50 border border-border-dark p-4 rounded-xl cursor-not-allowed">
                   <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                      <span className="text-xs text-white font-bold">B</span>
-                    </div>
+                    <IconImage 
+                      src={CHAIN_ICONS_CDN.BASE}
+                      fallbackText="B"
+                      fallbackColor="bg-blue-600"
+                      alt="Base"
+                      size={32}
+                    />
                     <span className="font-medium">Base</span>
                   </div>
                   <span className="material-icons-outlined text-slate-500">expand_more</span>
@@ -208,9 +190,13 @@ export default function DepositPage({ onNavigate }: DepositPageProps) {
                 <div className="col-span-4 bg-zinc-900/80 p-4 border-r border-border-dark">
                   <label className="block text-xs text-slate-500 mb-1 uppercase">Using</label>
                   <div className="flex items-center space-x-3 mt-2">
-                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white">
-                      <span className="material-icons-outlined text-sm">attach_money</span>
-                    </div>
+                    <IconImage 
+                      src={TOKEN_ICONS_CDN.USDC}
+                      fallbackText="$"
+                      fallbackColor="bg-blue-500"
+                      alt="USDC"
+                      size={32}
+                    />
                     <span className="font-medium uppercase">USDC</span>
                   </div>
                 </div>
@@ -245,7 +231,7 @@ export default function DepositPage({ onNavigate }: DepositPageProps) {
                   <div className="bg-zinc-900/50 p-4 rounded-xl border border-border-dark">
                     <label className="block text-xs text-slate-500 mb-1">Rebalance Interval</label>
                     <div className="flex items-center justify-between">
-                      <span className="font-medium">Every 6 Hours</span>
+                      <span className="font-medium">Auto</span>
                       <span className="material-icons-outlined text-sm text-primary">schedule</span>
                     </div>
                   </div>
@@ -291,9 +277,13 @@ export default function DepositPage({ onNavigate }: DepositPageProps) {
                     onClick={() => toggleExpand(protocol.id)}
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`w-9 h-9 rounded-full ${protocol.color} flex items-center justify-center`}>
-                        <span className="text-white text-xs font-bold">{protocol.icon}</span>
-                      </div>
+                      <IconImage 
+                        src={protocol.icon}
+                        fallbackText={protocol.iconFallback}
+                        fallbackColor={protocol.color}
+                        alt={protocol.name}
+                        size={36}
+                      />
                       <div>
                         <div className="flex items-center gap-2">
                           <span className="text-sm font-medium text-white">{protocol.name}</span>

@@ -1,38 +1,16 @@
 'use client';
 
 import { useState } from 'react';
-
-interface ProtocolConfig {
-  id: string;
-  name: string;
-  icon: string;
-  color: string;
-  apr: number;
-  enabled: boolean;
-  maxAllocation: number; // 最大资金占用率 %
-  minAPR: number;        // 最低 APR %
-  minTVL: number;        // 最低 TVL (M)
-}
+import { PROTOCOLS, ProtocolInfo } from '@/config/icons';
+import IconImage from './IconImage';
 
 interface PersonalizationSidebarProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const INITIAL_PROTOCOLS: ProtocolConfig[] = [
-  { id: 'aave', name: 'AAVE', icon: 'A', color: 'bg-cyan-500', apr: 3.79, enabled: true, maxAllocation: 40, minAPR: 2.0, minTVL: 100 },
-  { id: 'compound', name: 'Compound', icon: 'C', color: 'bg-green-500', apr: 3.21, enabled: true, maxAllocation: 35, minAPR: 2.5, minTVL: 80 },
-  { id: 'euler', name: 'Euler USDC', icon: 'E', color: 'bg-blue-600', apr: 2.85, enabled: true, maxAllocation: 30, minAPR: 2.0, minTVL: 50 },
-  { id: 'fluid', name: 'Fluid', icon: 'F', color: 'bg-purple-500', apr: 3.86, enabled: true, maxAllocation: 25, minAPR: 3.0, minTVL: 30 },
-  { id: 'moonwell', name: 'Moonwell', icon: 'M', color: 'bg-indigo-500', apr: 2.94, enabled: true, maxAllocation: 30, minAPR: 2.0, minTVL: 40 },
-  { id: 'morpho-gauntlet', name: 'Morpho Gauntlet USDC Prime', icon: 'MG', color: 'bg-blue-500', apr: 4.35, enabled: true, maxAllocation: 40, minAPR: 3.5, minTVL: 100 },
-  { id: 'morpho-moonwell', name: 'Morpho Moonwell Flagship USDC', icon: 'MM', color: 'bg-blue-500', apr: 4.40, enabled: true, maxAllocation: 35, minAPR: 3.0, minTVL: 80 },
-  { id: 'morpho-seamless', name: 'Morpho Seamless USDC Vault', icon: 'MS', color: 'bg-blue-500', apr: 3.93, enabled: true, maxAllocation: 30, minAPR: 2.5, minTVL: 60 },
-  { id: 'morpho-steakhouse', name: 'Morpho Steakhouse USDC', icon: 'MSt', color: 'bg-blue-500', apr: 3.26, enabled: false, maxAllocation: 25, minAPR: 2.0, minTVL: 50 },
-];
-
 export default function PersonalizationSidebar({ isOpen, onClose }: PersonalizationSidebarProps) {
-  const [protocols, setProtocols] = useState<ProtocolConfig[]>(INITIAL_PROTOCOLS);
+  const [protocols, setProtocols] = useState<ProtocolInfo[]>(PROTOCOLS);
   const [expandedProtocol, setExpandedProtocol] = useState<string | null>(null);
 
   const toggleProtocol = (id: string) => {
@@ -41,7 +19,7 @@ export default function PersonalizationSidebar({ isOpen, onClose }: Personalizat
     );
   };
 
-  const updateProtocolConfig = (id: string, field: keyof ProtocolConfig, value: number) => {
+  const updateProtocolConfig = (id: string, field: keyof ProtocolInfo, value: number) => {
     setProtocols(prev =>
       prev.map(p => p.id === id ? { ...p, [field]: value } : p)
     );
@@ -98,9 +76,13 @@ export default function PersonalizationSidebar({ isOpen, onClose }: Personalizat
                   onClick={() => toggleExpand(protocol.id)}
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`w-9 h-9 rounded-full ${protocol.color} flex items-center justify-center`}>
-                      <span className="text-white text-xs font-bold">{protocol.icon}</span>
-                    </div>
+                    <IconImage 
+                      src={protocol.icon}
+                      fallbackText={protocol.iconFallback}
+                      fallbackColor={protocol.color}
+                      alt={protocol.name}
+                      size={36}
+                    />
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-medium text-white">{protocol.name}</span>
