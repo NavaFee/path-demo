@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { usePrivy } from '@privy-io/react-auth';
 import { useAppSelector } from '@/hooks/useRedux';
+import AgentSidebar from './AgentSidebar';
+import PersonalizationSidebar from './PersonalizationSidebar';
 
 type ViewType = 'landing' | 'deposit' | 'dashboard';
 
@@ -15,6 +17,8 @@ export default function Header({ currentView = 'landing', onNavigate }: HeaderPr
   const { login, logout, authenticated, user } = usePrivy();
   const { eoaWallet } = useAppSelector((state) => state.wallet);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(false);
+  const [showPersonalization, setShowPersonalization] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const formatAddress = (address: string): string => {
@@ -36,6 +40,7 @@ export default function Header({ currentView = 'landing', onNavigate }: HeaderPr
   }, []);
 
   return (
+    <>
     <header className="fixed w-full top-0 z-50 border-b border-white/5 backdrop-blur-md bg-background-dark/80">
       <div className="max-w-[1600px] mx-auto px-6 h-14 flex items-center justify-between">
         <div className="flex items-center gap-8">
@@ -109,7 +114,7 @@ export default function Header({ currentView = 'landing', onNavigate }: HeaderPr
                   <div className="absolute right-0 top-full mt-2 w-56 bg-zinc-900 border border-white/10 rounded-xl shadow-2xl overflow-hidden animate-fade-in">
                     <button 
                       onClick={() => {
-                        onNavigate?.('dashboard');
+                        setShowSidebar(true);
                         setShowDropdown(false);
                       }}
                       className="w-full px-4 py-3 flex items-center gap-3 hover:bg-white/5 transition-colors text-left"
@@ -119,6 +124,7 @@ export default function Header({ currentView = 'landing', onNavigate }: HeaderPr
                     </button>
                     <button 
                       onClick={() => {
+                        setShowPersonalization(true);
                         setShowDropdown(false);
                       }}
                       className="w-full px-4 py-3 flex items-center gap-3 hover:bg-white/5 transition-colors text-left border-t border-white/5"
@@ -153,5 +159,16 @@ export default function Header({ currentView = 'landing', onNavigate }: HeaderPr
         </div>
       </div>
     </header>
+    
+    <AgentSidebar 
+      isOpen={showSidebar} 
+      onClose={() => setShowSidebar(false)} 
+    />
+    
+    <PersonalizationSidebar 
+      isOpen={showPersonalization} 
+      onClose={() => setShowPersonalization(false)} 
+    />
+  </>
   );
 }
